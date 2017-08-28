@@ -53,25 +53,26 @@ public class RecipeDAO {
 	}
 	
 	
-	//레시피 한 건만 조회 (cook, recipenum, ordernum)
-	public RecipeDTO Recipeselect(String cook, int recipenum, int ordernum){
+	//레시피 한 건만 조회 (cooking, recipenum, ordernum)
+	public RecipeDTO Recipeselect1(String cooking, int recipenum, int ordernum){
 		conn = DBUtil.getConnect();
 		RecipeDTO dto = new RecipeDTO();
 		String sql = "select* from Recipe where Cooking = ? and recipenum = ? and ordernum = ? "; 		//'%'||?|| '%';
 	
 		try {
 			st = conn.prepareStatement(sql);
-			st.setString(1, cook );
+			st.setString(1, cooking );
 			st.setInt(2, recipenum );
 			st.setInt(3, ordernum );
 			
 			rs = st.executeQuery();
-			if(rs.next()){			//rs.next()는 sql문이 수행된 값을 한번 찍어줘야 다음 문장들이 수행될 수 있음.
+			if (rs.next()){
+					//rs.next()는 sql문이 수행된 값을 한번 찍어줘야 다음 문장들이 수행될 수 있음.
 				
-				 String cooking = rs.getString(1);
+				  cooking = rs.getString(1);
 				 String subname = rs.getString(2);
-				 int recipenum = rs.getInt(3);
-				 int ordernum = rs.getInt(4);
+				  recipenum = rs.getInt(3);
+				  ordernum = rs.getInt(4);
 				 String ordercook = rs.getString(5);
 				 String userid = rs.getString(6);
 				 
@@ -90,8 +91,123 @@ public class RecipeDAO {
 	}
 	
 	
+
+	//요리명+ id로 조회 레시피 조회 (cooking, userid)
+		public ArrayList<RecipeDTO> Recipeselect2(String cooking, String userid){
+			conn = DBUtil.getConnect();
+			RecipeDTO dto = new RecipeDTO();
+			ArrayList<RecipeDTO> list = new ArrayList();
+			String sql = "select* from Recipe where Cooking = ? and userid = ? "; 		//'%'||?|| '%';
+		
+			try {
+				st = conn.prepareStatement(sql);
+				st.setString(1, cooking );
+				st.setString(2, userid );
+				
+				rs = st.executeQuery();
+				while (rs.next()){
+							//rs.next()는 sql문이 수행된 값을 한번 찍어줘야 다음 문장들이 수행될 수 있음.
+					
+					  cooking = rs.getString(1);
+					 String subname = rs.getString(2);
+					 int recipenum = rs.getInt(3);
+					 int ordernum = rs.getInt(4);
+					 String ordercook = rs.getString(5);
+					  userid = rs.getString(6);
+					 
+					 
+					dto = new RecipeDTO(cooking,  subname,  recipenum, ordernum, ordercook, 
+							 userid);
+					list.add(dto);
+				}		
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				DBUtil.dbClose(conn, st, rs);
+			}
+			return list;
+			
+		}
+		
+		
+		
+		//요리명으로 같은 요리명 모두 조회
+		public ArrayList<RecipeDTO> Recipeselect3(String cooking){
+			conn = DBUtil.getConnect();
+			RecipeDTO dto = new RecipeDTO();
+			ArrayList<RecipeDTO> list = new ArrayList();
+			String sql = "select* from Recipe group by Cooking having Cooking = ?"; 		//'%'||?|| '%';
+			
+			try {
+				st = conn.prepareStatement(sql);
+				st.setString(1, cooking );
+				
+				rs = st.executeQuery();
+				while (rs.next()){
+							//rs.next()는 sql문이 수행된 값을 한번 찍어줘야 다음 문장들이 수행될 수 있음.
+					
+					 cooking = rs.getString(1);
+					String subname = rs.getString(2);
+					int recipenum = rs.getInt(3);
+					int ordernum = rs.getInt(4);
+					String ordercook = rs.getString(5);
+					String userid = rs.getString(6);
+					
+					
+					dto = new RecipeDTO(cooking,  subname,  recipenum, ordernum, ordercook, 
+							userid);
+					
+					list.add(dto);
+				}		
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				DBUtil.dbClose(conn, st, rs);
+			}
+			return list;
+			
+		}
 	
 	
+		//특정 id의 레시피 모두 조회
+		public ArrayList<RecipeDTO> Recipeselect4(String userid){
+			conn = DBUtil.getConnect();
+			RecipeDTO dto = new RecipeDTO();
+			ArrayList<RecipeDTO> list = new ArrayList();
+			String sql = "select* from Recipe group by userid having userid = ?"; 		//'%'||?|| '%';
+			
+			try {
+				st = conn.prepareStatement(sql);
+				st.setString(1, userid );
+				
+				rs = st.executeQuery();
+				while (rs.next()){
+							//rs.next()는 sql문이 수행된 값을 한번 찍어줘야 다음 문장들이 수행될 수 있음.
+					
+					String cooking = rs.getString(1);
+					String subname = rs.getString(2);
+					int recipenum = rs.getInt(3);
+					int ordernum = rs.getInt(4);
+					String ordercook = rs.getString(5);
+					 userid = rs.getString(6);
+					
+					
+					dto = new RecipeDTO(cooking,  subname,  recipenum, ordernum, ordercook, 
+							userid);
+					
+					list.add(dto);
+				}		
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				DBUtil.dbClose(conn, st, rs);
+			}
+			return list;
+			
+		}
 	
 	
 	
