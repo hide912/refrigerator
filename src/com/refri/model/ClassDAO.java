@@ -24,7 +24,7 @@ public class ClassDAO {
 	// 모든 Class 를 List에 담음
 	public List<ClassDTO> selectAll() {
 		List<ClassDTO> slist = new ArrayList<>();
-		String sql = "SELECT * FROM instructor";
+		String sql = "SELECT * FROM class";
 		conn = DBUtil.getConnect();
 		try {
 			st = conn.prepareStatement(sql);

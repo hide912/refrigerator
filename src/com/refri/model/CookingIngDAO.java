@@ -85,14 +85,13 @@ import util.DBUtil;
 		}
 	
 		// CookingIng(재료) 추가(by DTO), 추가된 수만큼 리턴
-		public int insertClass(CookingDTO dto) {
-			String sql = "INSERT INTO CookingIng VALUES(?,?,?)";
+		public int insertClass(CookingIngDTO dto) {
+			String sql = "INSERT INTO CookingIng VALUES(?,?)";
 			conn = DBUtil.getConnect();
 			try {
 				st = conn.prepareStatement(sql);
 				st.setString(1, dto.getCooking());
-				st.setString(2, dto.getClassin());
-				st.setString(3, dto.getSubClass());
+				st.setString(2, dto.getIngredient());
 				count = st.executeUpdate();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
