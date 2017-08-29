@@ -9,14 +9,14 @@ import com.refri.model.InventoryDTO;
 
 public class InventoryView {
 	public static void print(List<InventoryDTO> inventorylist) {
-		System.out.println("★★★★★여러건★★★★★");
+		//System.out.println("★★★★★여러건★★★★★");
 		for (InventoryDTO dept : inventorylist) {
 			System.out.println(dept);
 		}
 	}
 
 	public static void print(InventoryDTO inventory) {
-		System.out.println("★★★★★한건★★★★★");
+		//System.out.println("★★★★★한건★★★★★");
 		System.out.println(inventory);
 	}
 

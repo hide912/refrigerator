@@ -75,6 +75,27 @@ public class InventoryDAO {
 		}
 		return ilist;
 	}
+	
+	//일주일 유효기간이 남은 건 조회
+		public List<InventoryDTO> selectByDuedate(Date day) {
+			List<InventoryDTO> ilist = new ArrayList<>();
+			String sql = "select * from inventory where outputdate <= ?+7";
+			conn = DBUtil.getConnect();
+			try {
+				ps = conn.prepareStatement(sql);
+				ps.setDate(1, day);
+				rs = ps.executeQuery();
+				while (rs.next()) {
+					InventoryDTO dto = makeInventory(rs);
+					ilist.add(dto);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				DBUtil.dbClose(conn, ps, rs);
+			}
+			return ilist;
+		}
 
 	// 입력
 	public int inventoryInsert(InventoryDTO it) {
