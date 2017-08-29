@@ -13,11 +13,12 @@ import util.DateUtil;
 public class InventoryController {
 
 	public static void main(String[] args) {
-		System.out.println("1.모두조회");
-		System.out.println("2.특정재료조회");
-		System.out.println("3.재료정보입력");
-		System.out.println("4.재료정보수정");
-		System.out.println("5.재료정보삭제");
+		System.out.println("1.냉장고재료 모두조회");
+		System.out.println("2.냉장고에 특정재료조회");
+		System.out.println("3.재료의 유효기간으로 조회");		
+		System.out.println("4.냉장고에 재료정보입력");
+		System.out.println("5.냉장고에 재료정보수정");
+		System.out.println("6.냉장고에 재료정보삭제");
 		System.out.println("0.종료");
 		InventoryDAO dao = new InventoryDAO();
 		List<InventoryDTO> ilist = null;
@@ -41,7 +42,14 @@ public class InventoryController {
 				st = dao.selectByIng(id);
 				InventoryView.print(st);
 				break;
-			case 3: {
+			case 3:
+				System.out.print("유효기간을 입력하세요(2017-08-16)>>.");
+				String day = sc.next();				
+				java.sql.Date due_day = DateUtil.stringToDate(day);
+				ilist = dao.selectByOutputdate(due_day);
+				InventoryView.print(ilist);
+				break;
+			case 4: {
 				System.out.print("재료명>>");
 				String ingredient = sc.next();
 				System.out.print("반입일자>>");
@@ -62,7 +70,7 @@ public class InventoryController {
 				InventoryView.print(msg);
 				break;
 			}
-			case 4: {
+			case 5: {
 				System.out.print("수정할 재료명>>");
 				String ingredient = sc.next();
 				System.out.println("original 정보입니다.");
@@ -87,7 +95,7 @@ public class InventoryController {
 				InventoryView.print(msg);
 				break;
 			}
-			case 5:
+			case 6:
 				System.out.print("삭제할 재료명>>");
 				String ingredient = sc.next();
 				System.out.println("original 정보입니다.");

@@ -55,10 +55,30 @@ public class InventoryDAO {
 		}
 		return dto;
 	}
+	//유효기간으로 여러건 조회
+	public List<InventoryDTO> selectByOutputdate(Date day) {
+		List<InventoryDTO> ilist = new ArrayList<>();
+		String sql = "select * from inventory where outputdate=?";
+		conn = DBUtil.getConnect();
+		try {
+			ps = conn.prepareStatement(sql);
+			ps.setDate(1, day);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				InventoryDTO dto = makeInventory(rs);
+				ilist.add(dto);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.dbClose(conn, ps, rs);
+		}
+		return ilist;
+	}
 
 	// 입력
 	public int inventoryInsert(InventoryDTO it) {
-		String sql = "insert into inventory values (?,?,?,?,?,?,?)";
+		String sql = "insert into inventory values (?,?,?,?,?,?)";
 		conn = DBUtil.getConnect();
 		try {
 			ps = conn.prepareStatement(sql);
