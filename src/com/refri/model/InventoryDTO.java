@@ -108,7 +108,7 @@ public class InventoryDTO {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("재고관리 [ingredient=").append(ingredient).append(", importdate=").append(importdate)
+		builder.append("냉장고 재료관리 [ingredient=").append(ingredient).append(", importdate=").append(importdate)
 				.append(", stock=").append(stock).append(", unit=").append(unit).append(", outputdate=")
 				.append(outputdate).append(", location=").append(location).append("]");
 		return builder.toString();

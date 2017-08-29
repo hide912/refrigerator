@@ -23,6 +23,8 @@ public class InventoryController {
 		InventoryDAO dao = new InventoryDAO();
 		List<InventoryDTO> ilist = null;
 		InventoryDTO st = null;
+		Date curdate = new java.sql.Date(System.currentTimeMillis());
+		Date importdate = null;
 
 		Scanner sc = new Scanner(System.in);
 		myloop: while (true) {
@@ -52,8 +54,14 @@ public class InventoryController {
 			case 4: {
 				System.out.print("재료명>>");
 				String ingredient = sc.next();
-				System.out.print("반입일자>>");
-				Date importdate = DateUtil.stringToDate(sc.next());
+				System.out.print("반입일자(그냥 엔터를 칠 경우 반입일자는 현재날짜로 저장됩니다.)>>");
+				sc.nextLine();
+				String import_day = sc.nextLine();
+				if ("".equals(import_day) || import_day == null) {
+					importdate = curdate;
+				}else{
+					importdate = DateUtil.stringToDate(import_day);
+				}
 				System.out.print("재고>>");
 				int stock = sc.nextInt();
 				System.out.print("단위>>");
@@ -77,7 +85,7 @@ public class InventoryController {
 				InventoryView.print(dao.selectByIng(ingredient));
 
 				System.out.print("수정할 반입일자>>");
-				Date importdate = DateUtil.stringToDate(sc.next());
+				importdate = DateUtil.stringToDate(sc.next());
 				System.out.print("수정할 재고>>");
 				int stock = sc.nextInt();
 				System.out.print("수정할 단위>>");
