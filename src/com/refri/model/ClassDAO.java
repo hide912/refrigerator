@@ -23,7 +23,7 @@ public class ClassDAO {
 
 	// 모든 Class 를 List에 담음
 	public List<ClassDTO> selectAll() {
-		List<ClassDTO> slist = new ArrayList<>();
+		List<ClassDTO> cllist = new ArrayList<>();
 		String sql = "SELECT * FROM class";
 		conn = DBUtil.getConnect();
 		try {
@@ -31,7 +31,7 @@ public class ClassDAO {
 			rs = st.executeQuery();
 			while (rs.next()) {
 				ClassDTO dto = makeDTO(rs);
-				slist.add(dto);
+				cllist.add(dto);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -39,12 +39,12 @@ public class ClassDAO {
 		} finally {
 			DBUtil.dbClose(conn, st, rs);
 		}
-		return slist;
+		return cllist;
 	}
 
 	// classin(대분류)로 선택된 Class 리턴
-	public ClassDTO selectByIn(String no) {
-		ClassDTO dto = null;
+	public List<ClassDTO> selectByIn(String no) {
+		List<ClassDTO> cllist = new ArrayList<>();
 		String sql = "SELECT * FROM class WHERE classin = ?";
 		conn = DBUtil.getConnect();
 		try {
@@ -52,7 +52,8 @@ public class ClassDAO {
 			st.setString(1, no);
 			rs = st.executeQuery();
 			while (rs.next()) {
-				dto = makeDTO(rs);
+				ClassDTO dto = makeDTO(rs);
+				cllist.add(dto);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -60,12 +61,12 @@ public class ClassDAO {
 		} finally {
 			DBUtil.dbClose(conn, st, rs);
 		}
-		return dto;
+		return cllist;
 	}
 
 	// Subclass(중분류)로 선택된 Class 리턴
-	public ClassDTO selectBySub(String no) {
-		ClassDTO dto = null;
+	public List<ClassDTO> selectBySub(String no) {
+		List<ClassDTO> cllist = new ArrayList<>();
 		String sql = "SELECT * FROM class WHERE subClass = ?";
 		conn = DBUtil.getConnect();
 		try {
@@ -73,7 +74,8 @@ public class ClassDAO {
 			st.setString(1, no);
 			rs = st.executeQuery();
 			while (rs.next()) {
-				dto = makeDTO(rs);
+				ClassDTO dto = makeDTO(rs);
+				cllist.add(dto);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -81,7 +83,7 @@ public class ClassDAO {
 		} finally {
 			DBUtil.dbClose(conn, st, rs);
 		}
-		return dto;
+		return cllist;
 	}
 	
 	// Class(분류) 추가(by DTO), 추가된 수만큼 리턴
