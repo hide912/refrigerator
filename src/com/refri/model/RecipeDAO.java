@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import util.DBUtil;
+
 
 
 public class RecipeDAO {
@@ -54,16 +56,16 @@ public class RecipeDAO {
 	
 	
 	//레시피 한 건만 조회 (cooking, recipenum, ordernum)
-	public RecipeDTO Recipeselect1(String cooking, int recipenum, int ordernum){
+	public RecipeDTO Recipeselect(String cooking, int recipenum){
 		conn = DBUtil.getConnect();
 		RecipeDTO dto = new RecipeDTO();
-		String sql = "select* from Recipe where Cooking = ? and recipenum = ? and ordernum = ? "; 		//'%'||?|| '%';
+		String sql = "select* from Recipe where Cooking = ? and recipenum = ? "; 		//'%'||?|| '%';
 	
 		try {
 			st = conn.prepareStatement(sql);
 			st.setString(1, cooking );
 			st.setInt(2, recipenum );
-			st.setInt(3, ordernum );
+			
 			
 			rs = st.executeQuery();
 			if (rs.next()){
@@ -72,7 +74,7 @@ public class RecipeDAO {
 				  cooking = rs.getString(1);
 				 String subname = rs.getString(2);
 				  recipenum = rs.getInt(3);
-				  ordernum = rs.getInt(4);
+				 int ordernum = rs.getInt(4);
 				 String ordercook = rs.getString(5);
 				 String userid = rs.getString(6);
 				 
@@ -93,7 +95,7 @@ public class RecipeDAO {
 	
 
 	//요리명+ id로 조회 레시피 조회 (cooking, userid)
-		public ArrayList<RecipeDTO> Recipeselect2(String cooking, String userid){
+		public ArrayList<RecipeDTO> RecipeCoookingUserid(String cooking, String userid){
 			conn = DBUtil.getConnect();
 			RecipeDTO dto = new RecipeDTO();
 			ArrayList<RecipeDTO> list = new ArrayList();
@@ -133,7 +135,7 @@ public class RecipeDAO {
 		
 		
 		//요리명으로 같은 요리명 모두 조회
-		public ArrayList<RecipeDTO> Recipeselect3(String cooking){
+		public ArrayList<RecipeDTO> RecipeCooking(String cooking){
 			conn = DBUtil.getConnect();
 			RecipeDTO dto = new RecipeDTO();
 			ArrayList<RecipeDTO> list = new ArrayList();
@@ -144,7 +146,9 @@ public class RecipeDAO {
 				st.setString(1, cooking );
 				
 				rs = st.executeQuery();
+				if(rs.next()){
 				while (rs.next()){
+					
 							//rs.next()는 sql문이 수행된 값을 한번 찍어줘야 다음 문장들이 수행될 수 있음.
 					
 					 cooking = rs.getString(1);
@@ -160,9 +164,10 @@ public class RecipeDAO {
 					
 					list.add(dto);
 				}		
+				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+			//	e.printStackTrace();
 			}finally{
 				DBUtil.dbClose(conn, st, rs);
 			}
@@ -172,7 +177,7 @@ public class RecipeDAO {
 	
 	
 		//특정 id의 레시피 모두 조회
-		public ArrayList<RecipeDTO> Recipeselect4(String userid){
+		public ArrayList<RecipeDTO> RecipeUserid(String userid){
 			conn = DBUtil.getConnect();
 			RecipeDTO dto = new RecipeDTO();
 			ArrayList<RecipeDTO> list = new ArrayList();
@@ -249,9 +254,41 @@ public class RecipeDAO {
 		return count;
 	}
 
+	
+	// 레시피 등록 일괄처리
+	public int[] ManyInsert(ArrayList<RecipeDTO> list) {
+		int[] result = null;
+		conn = DBUtil.getConnect();
+		String sql = "insert into Recipe values ";
+
+		try {
+            conn.setAutoCommit(false);
+			Statement st = conn.createStatement();
+			for (RecipeDTO dto : list) {
+				String sql2 = sql +  "( '" + dto.getCooking() + "', '" + dto.getSubname() + "', "  
+						+ dto.getRecipenum() + ", " + dto.getOrdernum() + ", '" + dto.getOrdercook() + "', '"
+						+ dto.getUserid() + "' )";
+			
+				st.addBatch(sql2);
+			}
+			result = st.executeBatch();
+			conn.commit();
+		} catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				
+			}
+			e.printStackTrace();
+		}
+		return result;
+	}// insertmany	//오토커밋 false?
+	
 
 	
-	//레시피 내용 수정
+	//레시피 내용 수정 일괄처리
 	public int RecipeUpdate(RecipeDTO dto){
 		conn = DBUtil.getConnect();
 		int count=0;
@@ -292,10 +329,9 @@ public class RecipeDAO {
 	}
 	
 	//레시피 삭제
-	
-	public int RecipeDelete(String cooking, int recipenum){
+	public int RecipeDelete(String cooking, int recipenum, String userid){
 		String sql = "Delete from Recipe "
-				+ " where trim(?) and trim(?) ;";
+				+ " where trim(?) and trim(?) and trim(?);";
 	
 		conn = DBUtil.getConnect();
 		
@@ -307,6 +343,7 @@ public class RecipeDAO {
 		st = conn.prepareStatement(sql);
 		st.setString(1, dto.getCooking());
 		st.setInt(2, dto.getRecipenum());
+		st.setString(3, userid);
 		
 		count = st.executeUpdate();
 	
