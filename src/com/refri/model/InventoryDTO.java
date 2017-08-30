@@ -108,9 +108,9 @@ public class InventoryDTO {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("[재료=").append(ingredient).append(", 반입기간=").append(importdate)
-				.append(", 재고=").append(stock).append(", 단위=").append(unit).append(", 유효기간=")
-				.append(outputdate).append(", 냉장고 위치=").append(location).append("]");
+		builder.append("[재료=").append(ingredient).append("\t 반입일자=").append(importdate)
+				.append("\t 재고=").append(stock).append("\t 단위=").append(unit).append("\t 유효기한=")
+				.append(outputdate).append("\t 냉장고 위치=").append(location).append("]");
 		return builder.toString();
 	}
 }
