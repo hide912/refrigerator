@@ -19,7 +19,8 @@ import util.DBUtil;
 		private CookingIngDTO makeDTO(ResultSet rs) throws SQLException {
 			String cooking = rs.getString(1);
 			String ingredient = rs.getString(2);
-			return new CookingIngDTO(cooking, ingredient);
+			int recipenum = rs.getInt(3);
+			return new CookingIngDTO(cooking, ingredient, recipenum);
 		}
 	
 		// 모든 CookingIng 를 List에 담음
@@ -64,6 +65,29 @@ import util.DBUtil;
 			}
 			return cilist;
 		}
+		
+		// Cooking + RecipeNum(요리명+레시피번호)으로 선택된 CookingIng 리턴
+				public List<CookingIngDTO> selectByCnN(String no, int num) {
+					List<CookingIngDTO> cilist = new ArrayList<>();
+					String sql = "SELECT * FROM CookingIng WHERE cooking = ? and recipenum = ?";
+					conn = DBUtil.getConnect();
+					try {
+						st = conn.prepareStatement(sql);
+						st.setString(1, no);
+						st.setInt(2, num);
+						rs = st.executeQuery();
+						while (rs.next()) {
+							CookingIngDTO dto = makeDTO(rs);
+							cilist.add(dto);
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} finally {
+						DBUtil.dbClose(conn, st, rs);
+					}
+					return cilist;
+				}
 	
 		// Ingredient(재료명)으로 선택된 CookingIng 리턴
 		public List<CookingIngDTO> selectByIng(String no) {
@@ -76,7 +100,7 @@ import util.DBUtil;
 				rs = st.executeQuery();
 				while (rs.next()) {
 					CookingIngDTO dto = makeDTO(rs);
-					dto = makeDTO(rs);
+					cilist.add(dto);
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -86,15 +110,16 @@ import util.DBUtil;
 			}
 			return cilist;
 		}
-	
+		
 		// CookingIng(재료) 추가(by DTO), 추가된 수만큼 리턴
 		public int insertCookingING(CookingIngDTO dto) {
-			String sql = "INSERT INTO CookingIng VALUES(?,?)";
+			String sql = "INSERT INTO CookingIng VALUES(?,?,?)";
 			conn = DBUtil.getConnect();
 			try {
 				st = conn.prepareStatement(sql);
 				st.setString(1, dto.getCooking());
 				st.setString(2, dto.getIngredient());
+				st.setInt(3, dto.getRecipenum());
 				count = st.executeUpdate();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -113,8 +138,10 @@ import util.DBUtil;
 			try {
 	            		Statement st = conn.createStatement();
 				for (CookingIngDTO dto : list) {
-					String sql = "insert into CookingIng values " + "( '" 
-							    + dto.getCooking() + "', '" + dto.getIngredient() + "')";
+					String sql = "insert into CookingIng values " + 
+				"( '" + dto.getCooking() + "', '" 
+					+ dto.getIngredient() + "', "  	
+					+ dto.getRecipenum()+ " )";
 					st.addBatch(sql);
 				}
 				result = st.executeBatch();
@@ -127,13 +154,14 @@ import util.DBUtil;
 		}
 	
 		// CookingIng(요리재료) 삭제(by 대분류), 삭제된 수만큼 리턴
-		public int deleteCookingIng(String cooking, String ing) {
-			String sql = "DELETE FROM CookingIng WHERE cooking = ? and ingredient = ?" ;
+		public int deleteCookingIng(String cooking, String ing, int num) {
+			String sql = "DELETE FROM CookingIng WHERE cooking = ? and ingredient = ? and recipenum = ?" ;
 			conn = DBUtil.getConnect();
 			try {
 				st = conn.prepareStatement(sql);
 				st.setString(1, cooking);
 				st.setString(2, ing);
+				st.setInt(3, num);
 	
 				count = st.executeUpdate();
 			} catch (SQLException e) {

@@ -34,7 +34,7 @@ public class CookingController {
 			System.out.println("7. 요리 변경 ");
 			System.out.println("0. 종료");
 
-			System.out.print("  작업선택  >>  ");
+			System.out.print("작업선택  >>  ");
 			switch (sc.nextInt()) {
 			case 0:
 				System.out.println("종료 .. ");
@@ -133,7 +133,51 @@ public class CookingController {
 					System.out.println("잘못된 입력입니다.");
 				break;
 			}
+			case 7: {
+				System.out.println("수정할 요리명을 입력하세요 >> ");
+				String cooking = sc.nextLine();
 
+				clist = cDAO.selectByCooking(cooking);
+
+				if (clist.isEmpty() == true) {
+
+					cllist = clDAO.selectAll();
+					ClassView.print(cllist);
+					cllist = null;
+					
+					System.out.print("수정할 대분류 >> ");
+					String classin = sc.nextLine();
+					
+					cllist = clDAO.selectByIn(classin);
+					
+					if(clist.isEmpty() != true){
+						
+						cllist = null;
+						System.out.print("수정할 중분류 >> ");
+						String subClass = sc.nextLine();
+						cllist = clDAO.selectByIn(subClass);
+						
+							if(clist.isEmpty() != true){
+	
+								c = new CookingDTO(cooking, classin, subClass);
+								int result = cDAO.updateCooking(c);
+	
+								String msg = "수정 실패";
+								if (result > 0)
+									msg = "수정 성공";
+								CookingView.print(msg);
+								break;
+							}
+							else
+								System.out.println("잘못된 중분류입니다.");
+						}
+					else
+						System.out.println("잘못된 대분류입니다.");
+					
+				} else
+					System.out.println("이미 존재하는 요리입니다.");
+				break;
+				}
 			}
 		}
 	}
