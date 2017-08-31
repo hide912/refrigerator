@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import com.refri.model.InventoryDAO;
 import com.refri.model.InventoryDTO;
+import com.refri.model.MainDAO;
 import com.refri.view.InventoryView;
 
 import util.DateUtil;
@@ -16,6 +17,7 @@ import util.DateUtil;
 public class MainController {
 
 	public static void main(String[] args) {
+		MainDAO maindao = new MainDAO();
 		InventoryDAO dao = new InventoryDAO();
 		List<InventoryDTO> ilist = null;
 		Date importdate = null;
@@ -49,7 +51,7 @@ public class MainController {
 				System.out.println("종료합니다.");
 				break myloop;
 			case 1:
-
+				 maindao.Search_Select();
 				break;
 			case 2: {
 				System.out.print("재료명>>");

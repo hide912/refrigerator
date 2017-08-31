@@ -19,6 +19,23 @@ public class RecipeDTO {
 	
 	
 	
+	public RecipeDTO(String userid) {
+		super();
+		this.userid = userid;
+	}
+
+
+
+
+	public RecipeDTO(String cooking, int ordernum) {
+		super();
+		this.cooking = cooking;
+		this.ordernum = ordernum;
+	}
+
+
+
+
 	public String getCooking() {
 		return cooking;
 	}
