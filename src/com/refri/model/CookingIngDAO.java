@@ -88,6 +88,31 @@ import util.DBUtil;
 					}
 					return cilist;
 				}
+				
+				// Cooking + RecipeNum(요리명+레시피번호)으로 선택된 재료명 리스트 리턴
+				public List<String> selectingred(String no, int num) {
+					List<String> cilist = new ArrayList<>();
+					String sql = "SELECT ingredient FROM CookingIng WHERE cooking = ? and recipenum = ?";
+					conn = DBUtil.getConnect();
+					try {
+						st = conn.prepareStatement(sql);
+						st.setString(1, no);
+						st.setInt(2, num);
+						rs = st.executeQuery();
+						while (rs.next()) {
+							String ingredient = rs.getString(1);
+							
+
+							cilist.add(ingredient);
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} finally {
+						DBUtil.dbClose(conn, st, rs);
+					}
+					return cilist;
+				}
 	
 		// Ingredient(재료명)으로 선택된 CookingIng 리턴
 		public List<CookingIngDTO> selectByIng(String no) {

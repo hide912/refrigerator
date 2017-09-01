@@ -25,34 +25,67 @@ public class MainController {
 		InventoryDTO st = null;
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar cal = Calendar.getInstance();
-		System.out.println("---------------냉장고 재료 리스트---------------");
+		System.out.println("-----------------------------------------냉장고 재료 리스트--------------------------------------------");
 		ilist = dao.selectAll();
 		InventoryView.print(ilist);
-		System.out.println("-----------------------------------------------------");
+		System.out.println("-------------------------------------------------------------------------------------------------------");
 		System.out.println("");
-		System.out.println("###############유효기간이 일주일만 남은 재료 리스트###############");
+		System.out.println("#################################유효기간이 일주일만 남은 재료 리스트##################################");
 		Date curdate = new java.sql.Date(System.currentTimeMillis());
 		ilist = dao.selectByDuedate(curdate);
 		InventoryView.print(ilist);
-		System.out.println("#####################################################");
-		System.out.println("1.재료에 맞는 레시피 검색(재료명 입력)");
-		System.out.println("2.냉장고에 재료정보 추가");
-		System.out.println("3.냉장고에 재료정보 삭제");
-		System.out.println("4.냉장고에 재료정보 조회");
-		System.out.println("5.냉장고에 재료정보 수정");
-		System.out.println("0.종료");
-
+		System.out.println("#######################################################################################################");
+		
+		System.out.println(" 1.재료에 맞는 레시피 검색(재료명 입력) ");
+		
+		System.out.println(" 2.냉장고에 재료정보 추가 ");
+		
+		System.out.println(" 3.냉장고에 재료정보 삭제 ");
+		
+		System.out.println(" 4.냉장고에 재료정보 조회 ");
+		
+		System.out.println(" 5.냉장고에 재료정보 수정 ");
+		
+		System.out.println(" 0.종료		   ");
+		
+		/*
+		System.out.println("|-----------------------------------------|");
+		System.out.println("| 1.재료에 맞는 레시피 검색(재료명 입력)  |");
+		System.out.println("|-----------------------------------------|");
+		System.out.println("| 2.냉장고에 재료정보 추가 |");
+		System.out.println("|--------------------------|");
+		System.out.println("| 3.냉장고에 재료정보 삭제 |");
+		System.out.println("|--------------------------|");
+		System.out.println("| 4.냉장고에 재료정보 조회 |");
+		System.out.println("|--------------------------|");
+		System.out.println("| 5.냉장고에 재료정보 수정 |");
+		System.out.println("|--------------------------|");
+		System.out.println("| 0.종료		   |");
+		System.out.println("|--------------------------|");
+		*/
 		Scanner sc = new Scanner(System.in);
 		myloop: while (true) {
 			System.out.print("작업선택>>");
 			int select = sc.nextInt();
+			sc.nextLine();
 			switch (select) {
 			case 0:
 				System.out.println("종료합니다.");
 				break myloop;
 			case 1:
+				System.out.println("1:: 특정 재료로 할 수 있는 요리정보를 조회");
+				System.out.println("2:: 현 냉장고 안의 재료로 할 수 있는 요리정보를 모두 조회");
+				System.out.println("3:: 복수의 재료(입력)로 할 수 있는 요리정보를 조회.");
+				int x = sc.nextInt();
+				sc.nextLine();
+				if(x==1){
 				 maindao.Search_Select();
-				break;
+				}else if(x==2){
+				 maindao. ingredientsearch();
+				}else  if(x==3){
+				 maindao.아뭐먹지();
+				}
+				 break;
 			case 2: {
 				System.out.print("재료명>>");
 				String ingredient = sc.next();

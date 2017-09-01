@@ -1,12 +1,18 @@
 package com.refri.model;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import com.refri.view.InventoryView;
 import com.refri.view.RecipeView;
+
+import util.DBUtil;
 
 public class MainDAO {
 
@@ -21,6 +27,10 @@ public class MainDAO {
 	// 추천 요리에서 분류기능. or
 	// 사용자 추천 수를 만들어 추천 수도 추천기준에 반영(별점 등) + 평론 등의 리뷰 추가
 
+	Connection conn;
+	PreparedStatement st; // spl문 보내고 받는 통로
+	ResultSet rs; // 그 통로에서 받은 값을 리턴
+	
 	InventoryDAO invendao = new InventoryDAO();
 	InventoryView invenview = new InventoryView();
 	Scanner sc = new Scanner(System.in);
@@ -31,88 +41,25 @@ public class MainDAO {
 	public static void main(String[] args) {
 
 		MainDAO dao = new MainDAO();
-		 dao.ingredientsearch();
+//		 dao.ingredientsearch();
 
-		//dao.Search_Select();
-
+//	dao.Search_Select();
+	dao.아뭐먹지();
 	}
 
 	public void ingredientsearch() {
 
-		/*
-		 * List<InventoryDTO> alllist2 = new ArrayList<InventoryDTO>(); alllist2
-		 * = inven.selectAll(); List<String> alllist = new ArrayList<>(); //현재
-		 * 있는 재료의 재료명 정보만을 저장한 리스트 for(int i=0; i<alllist.size(); i++){
-		 * alllist.add(alllist2.get(i).getIngredient());
-		 * System.out.println(alllist.get(i)); }
-		 */
-		// String타입의 리스트 저장 왜 안되지?
-
-		/*
-		 * Date curdate = new java.sql.Date(System.currentTimeMillis());
-		 * List<InventoryDTO> duelist2 = new ArrayList<InventoryDTO>(); //현재
-		 * 유효기한 1주일 이하 재료 정보 duelist2 = inven.selectByDuedate(curdate);
-		 * List<String> duelist = new ArrayList(); // 현재 있는 재료 중 유효기한이 1주일 이하인
-		 * 재료명만을 저장한 리스트 for(int i=0; i<duelist2.size(); i++ ){
-		 * duelist.add(duelist2.get(i).getIngredient()); }
-		 */
-
-		List<InventoryDTO> alllist2 = new ArrayList<InventoryDTO>();
-		alllist2 = invendao.selectAll(); // 현재 있는 재료를 저장한 리스트
-
-		List<CookingIngDTO> cooklist2 = new ArrayList<>();
-		CookingIngDAO cookinging = new CookingIngDAO();
-		cooklist2 = cookinging.selectAll(); // cookinging의 요리명, 재료명, 레시피넘버 dto를
-											// 저장한 리스트
-		/*
-		 * List<String> cooklist = new ArrayList<>();
-		 * 
-		 * for(int i =0; i< cooklist2.size(); i++){
-		 * cooklist.add(cooklist2.get(i).getIngredient()); }
-		 */
-
-		List<CookingIngDTO> cooklist3 = new ArrayList<>();
-		for (int i = 0; i < alllist2.size(); i++) {
-			for (int j = 0; j < cooklist2.size(); j++) {
-				if (alllist2.get(i).getIngredient().equals(cooklist2.get(j).getIngredient())) { // 냉장고에
-																								// 있는
-																								// 재료와
-																								// cookinging에
-																								// 있는
-																								// 재료명이
-																								// 맞으면
-					cooklist3.add(cooklist2.get(j)); // 그 재료를 포함하는 요리 dto를 get해서
-														// cooklist3에 저장.
-				} // 요리명 재료명 레시피넘버
-			}
-		}
-
-		System.out.println("현재 있는 재료로 만들 수 있는 요리를 조회합니다. >>>>>");
-
-		List<RecipeDTO> recipelist = new ArrayList<>();
-		recipelist = recipedao.RecipeAll();
-		// 입력한 재료명이 들어간 요리, 재료, 레시피넘버의 dto 리스트와, recipe의 요리, 레시피 넘버를
-		// 비교해서 둘 다 같으면 그 레시피 정보 출력.
-
-		// 레시피리스트에서의 레시피넘버와 요리명과 위 cooklist3에서의 요리명과 레시피넘버가 같은지 확인하여
-		// 맞다면 레시피리스트에서 레시피 get
-		
-		List<RecipeDTO> searchlist = new ArrayList<>();
-		
-		for (int i = 0; i < recipelist.size(); i++) {
-			for (int j = 0; j < cooklist3.size(); j++) {
-				if (recipelist.get(i).getCooking().equals(cooklist3.get(j).getCooking())
-						&& (recipelist.get(i).getRecipenum() == cooklist3.get(j).getRecipenum())) {
-		
-						searchlist.add(recipelist.get(i));
-					}
-				// System.out.println(cooklist3.get(j).getIngredient());
-			}
-		}
-
-	}
-
+		ArrayList<RecipeDTO> list = new ArrayList<RecipeDTO>();
 	
+		list = renewal3();
+		
+		for(int i =0; i< list.size(); i++){
+			System.out.println(list.get(i).getUserid() +"님의 레시피, " +list.get(i).getCooking()+ "요리인<"
+					 + list.get(i).getSubname()+"> 의 정보입니다.");
+			System.out.println(list.get(i).getOrdernum()+">>>");
+			System.out.println(list.get(i).getOrdercook());
+		}
+	}
 
 	
 	
@@ -141,7 +88,6 @@ public class MainDAO {
 			
 				}
 			}
-
 		
 		List<RecipeDTO> recipelist = new ArrayList<>();
 		recipelist = recipedao.RecipeAll();	
@@ -167,21 +113,15 @@ public class MainDAO {
 				System.out.println("|"+searchlist.get(i).getCooking()+" 종류의 요리(분류명) 중 (" +
 						searchlist.get(i).getSubname()+")을 요리할 수 있습니다. \t\t| 레시피 넘버는 (" + searchlist.get(i).getRecipenum()+")입니다.|");
 			}
-			if(i !=0 && !(searchlist.get(i).getCooking().equals(searchlist.get(i-1).getCooking()))){
+			if(	i !=0 && !(searchlist.get(i).getCooking().equals(searchlist.get(i-1).getCooking()))
+					//&& !(searchlist.get(i).getRecipenum() == searchlist.get(i-1).getRecipenum())
+					){
 				System.out.println("|"+searchlist.get(i).getCooking()+" 종류의 요리(분류명) 중 (" +
 						searchlist.get(i).getSubname()+")을 요리할 수 있습니다. \t\t| 레시피 넘버는 (" + searchlist.get(i).getRecipenum()+")입니다.|");
 			}
 		}
 		System.out.println("-----------------------------------------------------------------------------------");		
-	/*		
-			for(int j=1; j< searchlist.size(); j++){
-					if( searchlist.get(i).getCooking().equals(searchlist.get(j).getCooking())){
-					break;
-					}
-			System.out.println(searchlist.get(i).getCooking()+" 종류의 요리(분류명) 중 (" +
-					searchlist.get(i).getSubname()+")을 요리할 수 있습니다. 레시피 넘버는 (" + searchlist.get(i).getRecipenum()+")입니다.");
-		}
-		}*/
+
 		System.out.println("위 요리 중 원하는 요리의 레시피를 가져옵니다. 요리 분류명과 레시피 번호를 입력해주세요.");
 		
 	
@@ -217,13 +157,211 @@ public class MainDAO {
 		}
 	}
 
+	//현재 냉장고에 있는 재료로 만들 수 있는 요리를 조회.
 	 
-	  
-	  public void ingredient(){ 
+	  //복수의 재료명으로 만들 수 있는 요리 조회, 레시피 제공
+	  public void 아뭐먹지(){ 
 		  
-		  	//어떤 재료에 해당하면,(get(i).재료)  그 시점 그 재료의 요리명에 카운트++ (get(i).요리명과 count++
+		 System.out.println("입력한 복수의 재료명으로 할 수 있는 요리의 레시피를 제공합니다.");
+		 
+		  IngredientSaveDAO savedao = new IngredientSaveDAO();
+		  ArrayList<IngredientSaveDTO> savelist = new ArrayList<IngredientSaveDTO>();
 		  
-	
+		  Scanner sc = new Scanner(System.in);
+		  
+		  while(true){
+			  System.out.println("재료명을 입력해주세요.");
+			  System.out.println("입력을 마치려면 end를 입력해주세요.");
+			  String st = sc.nextLine();
+			  if(st.equalsIgnoreCase("end")){
+				  break;
+			  }
+			  IngredientSaveDTO savedto = new IngredientSaveDTO(st);	  
+			  savelist.add(savedto);
+		  }
+		  
+		  int[] saveint = savedao.Saveingred(savelist);
+		  
+
+		  ArrayList<CookingIngDTO> cooklist = new ArrayList<>();
+		  cooklist = renewal2();
+		  for( int i =0; i<cooklist.size() ; i++){
+		  System.out.println(cooklist.get(i).getCooking()+ "을 요리할 수 있습니다. 레시피번호는 "+cooklist.get(i).getRecipenum()+"입니다.");
+		  }
+		  /*
+		 for( int i =0; i<cooklist.size() ; i++){
+		
+			 if(i ==0){
+				 System.out.println(cooklist.get(i).getCooking()+ "을 요리할 수 있습니다. 레시피번호는 "+cooklist.get(i).getRecipenum()+"입니다.");
+				// System.out.println(cooklist.get(i).getIngredient());
+				 }else
+				if(	i !=0 && !(cooklist.get(i).getCooking().equals(cooklist.get(i).getCooking()))
+						|| !(cooklist.get(i).getRecipenum() == cooklist.get(i).getRecipenum())) {
+						
+					 System.out.println(cooklist.get(i).getCooking()+ "을 요리할 수 있습니다. 레시피번호는 "+cooklist.get(i).getRecipenum()+"입니다.");
+				}
+					 //	 System.out.println(cooklist.get(i).getIngredient());
+			 
+		 }
+	*/
+		 myloop:while(true){
+			 System.out.println("다음으로 넘어갑니다. >>>>>>>>>> 엔터");
+			 sc.nextLine();
+		 System.out.println("선택 한 요리의 정보를 제공합니다.");
+		 System.out.println("요리명을 선택 해 입력해주세요.");
+		 System.out.println("끝내려면 end를 입력해주세요.");
+		 String cname = sc.nextLine();
+		 if(cname.equalsIgnoreCase("end")){
+			 System.out.println("종료합니다.");
+			 break myloop;
+		 }
+		 System.out.println("레시피 번호를 입력해주세요.");
+		 int recinum = sc.nextInt(); 
+		 sc.nextLine();
+		 
+		 List<String> cookinglist = new ArrayList<>(); 
+		 CookingIngDAO cookingdao = new CookingIngDAO();
+		 cookinglist = cookingdao.selectingred(cname, recinum);
+		 
+		 RecipeDAO recipedao = new RecipeDAO();
+		 ArrayList<RecipeDTO> relist = new ArrayList<RecipeDTO>();
+		 relist = recipedao.Recipeselect(cname, recinum);
+		 
+		 System.out.println(recinum+"번 " +cname+" 에 들어가는 재료는 다음과 같습니다.");
+		 for(int i = 0; i< cookinglist.size() ; i++){
+			 System.out.print(cookinglist.get(i)+"| ");
+		 }
+		 System.out.println();
+		 System.out.println("본 요리의 레시피 정보를 보려면 1번, 다른 요리의 정보를 원하면 2번을 눌러주세요.");
+		 int x = sc.nextInt();
+		 sc.nextLine();
+		 if(x==1){
+			
+			
+			 for(int i=0; i<relist.size(); i++){
+			 System.out.println(relist.get(i).getOrdernum()+" >>>>>");
+			 System.out.println(relist.get(i).getOrdercook());
+			 }
+		 }
+		
+		 }
+
+			int count =  savedao.Deleteingred();
+			System.out.println(count);
 	  }
 	  
+	  
+	  
+	  
+	  
+	  
+	  //현재 냉장고 재료로 어떤 요리를 만들 수 있는지, 요리명과 레시피넘버를 dto리스트로 리턴. 그런 현황 갱신.(재료 수만큼 중복 허용)
+public ArrayList<CookingIngDTO> renewal(){
+	conn = DBUtil.getConnect();
+	CookingIngDTO dto = new CookingIngDTO();
+	ArrayList<CookingIngDTO> list = new ArrayList<>();
+
+  String sql =  "select cooking, RECIPENUM, cookinging.ingredient "
+		+ " from inventory,  cookinging"
+		+ " where inventory.ingredient = cookinging.ingredient";
+
+try{
+st = conn.prepareStatement(sql);
+
+rs = st.executeQuery();
+while (rs.next()) {
+
+	 String cooking = rs.getString(1);
+	 String ingredient = rs.getString(3);
+	 int recipenum = rs.getInt(2);
+		 
+	dto = new CookingIngDTO(cooking, recipenum);	
+	list.add(dto);
 }
+}catch(SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DBUtil.dbClose(conn, st, rs);
+		}
+		return list;
+}
+
+
+//입력한 재료들로 어떤 요리를 만들 수 있는지, 요리명과 레시피넘버를 dto리스트로 리턴. 그런 현황 갱신.
+public ArrayList<CookingIngDTO> renewal2(){
+	conn = DBUtil.getConnect();
+	CookingIngDTO dto = new CookingIngDTO();
+	ArrayList<CookingIngDTO> list = new ArrayList<>();
+
+	String sql =  "select distinct cooking, RECIPENUM "
+		+ " from  ingredientsave,  cookinging"
+		+ " where  ingredientsave.ingredient = cookinging.ingredient";
+	 
+	try{
+		st = conn.prepareStatement(sql);
+		
+		rs = st.executeQuery();
+		while (rs.next()) {
+			
+			String cooking = rs.getString(1);
+			int recipenum = rs.getInt(2);
+			dto = new CookingIngDTO(cooking, recipenum);	
+			list.add(dto);
+		}
+	}catch(SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} finally {
+		DBUtil.dbClose(conn, st, rs);
+	}
+	return list;
+}
+
+//현재 있는 재료로 만들 수 있는 모든 레시피 정보
+public ArrayList<RecipeDTO> renewal3(){
+	conn = DBUtil.getConnect();
+	RecipeDTO dto = new RecipeDTO();
+	ArrayList<RecipeDTO> list = new ArrayList<>();
+	
+	String sql =  "select* "
+			+ " from  recipe where (cooking, recipenum) in ( "
+			+ " select cooking, RECIPENUM  from inventory,  cookinging  where inventory.ingredient = cookinging.ingredient  ) ";
+			
+	try{
+		st = conn.prepareStatement(sql);
+		
+		rs = st.executeQuery();
+		while (rs.next()) {
+			
+			String cooking = rs.getString(1);
+			String subname = rs.getString(2);
+			int recipenum = rs.getInt(3);
+			int ordernum = rs.getInt(4);
+			String ordercook = rs.getString(5);
+			String userid = rs.getString(6);
+			
+			dto = new RecipeDTO( cooking, subname, recipenum, ordernum, ordercook, userid);	
+			list.add(dto);
+		}
+	}catch(SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} finally {
+		DBUtil.dbClose(conn, st, rs);
+	}
+	return list;
+}
+	
+
+}
+	
+
+
+
+	  
+		//현재 냉장고 재료로 만들 수 있는 요리의 레시피 제공.( oredernum과 ordercook만 제공)
+
+
+
+

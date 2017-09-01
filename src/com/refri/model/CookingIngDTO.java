@@ -13,6 +13,14 @@ public class CookingIngDTO {
 	}
 
 	public CookingIngDTO() {
+	
+	}
+
+	
+	
+	public CookingIngDTO(String cooking, int recipenum) {
+		this.cooking = cooking;
+		this.recipenum = recipenum;
 	}
 
 	public CookingIngDTO(String cooking, String ingredient, int recipenum) {

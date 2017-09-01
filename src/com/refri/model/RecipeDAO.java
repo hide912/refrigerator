@@ -53,10 +53,11 @@ public class RecipeDAO {
 	}
 	
 	
-	//레시피 한 건만 조회 (cooking, recipenum)
-	public RecipeDTO Recipeselect(String cooking, int recipenum){
+	//레시피 한 건만 조회 (cooking, recipenum) 모든 오더 정보.
+	public ArrayList<RecipeDTO> Recipeselect(String cooking, int recipenum){
 		conn = DBUtil.getConnect();
 		RecipeDTO dto = new RecipeDTO();
+		ArrayList<RecipeDTO> list = new ArrayList<RecipeDTO>();
 		String sql = "select* from Recipe where Cooking = ? and recipenum = ? "; 		//'%'||?|| '%';
 	
 		try {
@@ -66,7 +67,7 @@ public class RecipeDAO {
 			
 			
 			rs = st.executeQuery();
-			if (rs.next()){
+			while(rs.next()){
 					//rs.next()는 sql문이 수행된 값을 한번 찍어줘야 다음 문장들이 수행될 수 있음.
 				
 				  cooking = rs.getString(1);
@@ -79,6 +80,8 @@ public class RecipeDAO {
 				 
 				dto = new RecipeDTO(cooking,  subname,  recipenum, ordernum, ordercook, 
 						 userid);
+				list.add(dto);
+				
 			}		
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -86,7 +89,7 @@ public class RecipeDAO {
 		}finally{
 			DBUtil.dbClose(conn, st, rs);
 		}
-		return dto;
+		return list;
 		
 	}
 	
@@ -402,14 +405,7 @@ public class RecipeDAO {
 					+ " ordercook = '" + dto.getOrdercook() +"' "	
 				+ " where cooking = '"+ dto.getCooking() +"' and ordernum = " + dto.getOrdernum() +" and recipenum = "
 						+ dto.getRecipenum();
-			
-		/*	update Recipe  
-			set subname = ' 엄마큰손    ',
-			ordercook = '엄마', 	
-			userid = 'Master'
-			where cooking = '짜장면' and ordernum = 1 and recipenum =  3
-			*/
-			
+	
 			st.addBatch(sql);
 			}
 			count = st.executeBatch();
